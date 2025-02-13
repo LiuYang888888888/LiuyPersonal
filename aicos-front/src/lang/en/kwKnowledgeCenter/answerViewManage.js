@@ -1,0 +1,28 @@
+export default {
+  answerViewManage: {
+    buildViewType: 'Add',
+    editViewType: 'Edit',
+    delViewType: 'Delete',
+    viewName: 'PerspectiveName',
+    buildDomain: 'Add',
+    buildChildDomain: 'Add',
+    viewTypeName: 'Add',
+    editViewTypeName: 'Edit',
+    viewDetail: 'Add',
+    editViewDetail: 'Edit',
+    name: 'ViewpointTypeName',
+    names: 'PerspectiveName',
+    encoding: 'PerspectiveEncoding',
+    desc: 'Remarks',
+    viewTypeTips: 'Please input a name for the perspective type',
+    editViewTypeTips: 'Please select the perspective type',
+    delViewTypeTips: 'Confirm to delete the selected data',
+    enableTypeTips: 'Confirm to enable the selected data',
+    disableTypeTips: 'Confirm to disable the selected data',
+    viewNameTips: 'Please input a perspective name',
+    numberTips: 'Please input a positive number',
+    lowercaseTips: 'Please input lowercase English and numbers',
+    isStart: 'Confirm Enable Selected Data',
+    isPause: 'Confirm deactivation of selected data',
+  }
+}

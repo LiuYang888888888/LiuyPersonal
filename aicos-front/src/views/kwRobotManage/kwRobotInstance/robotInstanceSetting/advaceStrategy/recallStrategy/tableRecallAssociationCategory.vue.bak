@@ -1,0 +1,80 @@
+<template>
+  <div class="avue-crud">
+    <el-table
+      ref="table"
+      :data="data"
+      size="small"
+      height="500"
+      @row-click="rowClick"
+      @selection-change="selectionChange"
+    >
+      <el-table-column type="selection" width="55"/>
+      <el-table-column property="dname" label="分类名称">
+      </el-table-column>
+    </el-table>
+  </div>
+</template>
+<script>
+import {
+  treeList
+} from "@/api/kwKnowledgeCenter/kwClassifySetting/index";
+export default {
+  name: "tableRecallAssociationCategory",
+  props: {
+    selectedIds: {
+      type: Array,
+      default: () => []
+    },
+  },
+  data() {
+    return {
+      data: [],
+      botId: '',
+      selectedList: [],
+    }
+  },
+  mounted() {
+    this.loadData();
+  },
+  methods: {
+    rowClick(row) {
+      this.$refs.table.toggleRowSelection(row);
+    },
+    selectionChange(selection) {
+      this.selectedList = selection;
+    },
+    getSelectedIds() {
+      return this.selectedList.map(item=>item.id);
+    },
+    async loadData() {
+      const info = {
+        ancestors: '0',
+        botId: this.botId,
+        classType: 'tableQa',
+        // 是否需要返回我的收藏节点
+        mine: false,
+      };
+      const {data} = await treeList(info);
+      if(data.success) {
+        this.data = data.data;
+        // debugger
+        this.$nextTick(()=>{
+          this.selectedIds.forEach(item=>{
+            const row = this.data.find(row=>row.id === item);
+            if(row) {
+              this.$refs.table.toggleRowSelection(row, true);
+            }
+          })
+        })
+      }
+    }
+  }
+}
+</script>
+
+<style scoped lang="scss">
+.avue-crud {
+  //height: 500px;
+  //overflow: auto;
+}
+</style>

@@ -1,0 +1,82 @@
+export default {
+  manage: {
+    errorFileFormat: "Not an allowed file type！",
+
+    internalApp: 'InternalApplications',
+    internalCom: 'InternalComponents',
+    externalCom: 'ExternalComponents',
+    hot: 'Hot',
+    new: 'New',
+    enable: 'Enable',
+    notEnabled: 'NotEnabled',
+    deactivate: 'Deactivate',
+    application: 'Application',
+    component: 'Component',
+    internal: 'Internal',
+    external: 'External',
+    open: 'Open',
+    notOpened: 'NotOpened',
+
+
+    id: 'ID',
+    appSource: 'AppSource',
+    appType: 'AppType',
+    appName: 'AppName',
+    systemCode: 'SystemCode',
+    enableStatus: 'EnableStatus',
+    applicationHeat: 'ApplicationHeat',
+    updates: 'Updates',
+    openingStatus: 'OpeningStatus',
+    mallIcon: 'MallIcon',
+    updateTime: "UpdateTime",
+    isDelete: 'DeleteOrNot',
+    deleted: 'Deleted',
+    notDeleted: 'NotDeleted',
+    desktopType: 'desktopType',
+    menuId: 'menuId',
+    tenantId: 'tenantId',
+    basicInformation: 'BasicInformation',
+    routingAddress: 'RoutingAddress',
+
+    desc: 'ApplicationIntroduction',
+
+
+
+    hottest: 'HotTest',
+    newest: 'Newest',
+
+    appConfiguration: "ApplicationConfiguration",
+    appIntroduction: "ApplicationIntroduction",
+    comConfiguration: "ComponentConfiguration",
+    comIntroduction: "ComponentIntroduction",
+    dataDownload: 'DataDownload',
+    contactManufacturer: 'ContactManufacturer',
+    appExamples: 'ApplicationExamples',
+    elaborateOn: "ElaborateOn",
+    appExamplesTip: 'Please upload. jpg/png__ 360px * 240px__ Application example images, not exceeding 2M',
+    pleaseUpload: 'Please upload ',
+    sso: ' SSO',
+    desktopIcon: 'DesktopIcon',
+    menuIcon: 'MenuIcon',
+    authAddress: 'AuthorizedAddress',
+    centralizedAuth: 'CentralizedAuthorization',
+    authVariables: 'AuthorizationVariables',
+    moduleAddress: 'ModuleAddress',
+    moduleVariables: 'ModuleVariables',
+    reservedParameters: 'ReservedParameters',
+    fileSize:'The file is too big to match',
+
+    comName: 'ComponentName',
+
+    checkDataTip: 'There are form items in the tab that have not been passed. Please pay attention to returning for inspection.',
+    tip: 'Tip',
+    batchDeleteTip: 'Confirm whether to delete ',
+    countsTip: ' pieces of data?',
+    stopTip: 'Are you sure you want to deactivate it?',
+    settingsTip: 'Are you sure to cancel the settings?',
+    stopUseTip: 'Deactivating will delete the bound menu. Are you sure you want to deactivate it?',
+    hotTestTip: 'Are you sure to cancel the "hottest" setting?',
+    newTestTip: 'Are you sure to cancel the "latest" setting?',
+
+  }
+}

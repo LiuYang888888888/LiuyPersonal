@@ -1,0 +1,57 @@
+export default {
+  formsetting: {
+
+    EnglishName: "英文名称",
+    ChineseName: "中文名称",
+    displayType: "显示类型",
+    alias: "别名",
+    required: "必填项",
+    answerDisplayEle: "答案展示元素",
+    maximumCharacters: "最长字符数",
+    minimumCharacters: '最短字符数',
+    sort: "排序",
+    detectionType: "检测类型",
+    noParity: '无校验',
+    phoneNumber: '手机号',
+    landlineNumber: '座机号',
+    IDCard: '身份证',
+    mailbox: '邮箱',
+    digit: '数字',
+    letter: '字母',
+    string: '字符串',
+    integer: '整数',
+    decimal: '小数',
+    date: '日期',
+    selections: "选择内容",
+    dataType: '数据类型',
+    dataPermissions: "数据权限",
+    formName: "表格名称",
+    text: "文本",
+    textBox: "文本框",
+    textField: "文本域",
+    textTieldAnnex: "文本域（含附件）",
+    select: "下拉框",
+    radio: "单选",
+    check: "复选",
+    dateControl: "日期控件",
+    attachmentControl: "附件控件",
+    imageUpload: "图片上传",
+    editor: "编辑器",
+    successfullySet: '设置成功',
+    deleteForm: '删除表单',
+    gotIt: '知道了',
+
+    isItMandatory: '是否必填项',
+
+    selectData: '请选择数据',
+    selectDeleteTips: '请选择要删除的表单',
+    deleteTips: '确认要删除表单吗?',
+    cannotDeleteTips: '该表单已被表单知识分类引用，无法删除。请清空关联关系后再试!',
+    charactersTips: '最小字符数不能大于最大字符数',
+    positiveNumberTips: '请输入正数',
+    multipleDataTips: '多个数据“#####”分割',
+    
+
+
+  }
+}

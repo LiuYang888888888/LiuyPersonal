@@ -1,0 +1,676 @@
+<template>
+  <div>
+    <div class="wrap">
+      <el-row>
+        <el-col :span="24" class="topWarp">
+          <div class="header">
+            <div class="leBox">
+              <span>应用管理</span><span class="txt">(共{{ page.total }}个)</span>
+            </div>
+          </div>
+          <div class="right">
+            <div class="box">
+              <span class="btn" v-if="permissionList['ai-application-new-app']">
+                <el-button size="small" type="success" @click="addVisible = true">新建应用</el-button>
+              </span>
+              <span class="input">
+                <el-input size="small" v-model="form.name" placeholder="请输入应用名称"></el-input>
+              </span>
+              <span class="img">
+                <span class="icon-search_blue" @click="querySeach"></span>
+              </span>
+              <el-pagination background layout="prev, pager, next" :total="page.total" @current-change="currentChange">
+              </el-pagination>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+    <el-row class="cotaner">
+      <el-col :span="8" class="item" v-for="(item, i) of data" :key="i">
+        <div class="item-box" :class="{
+          ledom: (i + 1) % 3 == 1,
+          cen: (i + 1) % 3 == 2,
+          ri: (i + 1) % 3 == 0,
+        }">
+          <div class="header">
+            <div class="le">
+              <el-image class="img" src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
+                fit="cover"></el-image>
+              <span class="text">{{ item.name }} </span>
+            </div>
+            <div class="status">
+              <img v-if="item.status === '1' && compareDate(item.endTime)" class="image"
+                src="@/assets/iconfont/normal.png" alt="" />
+              <span v-if="item.status === '0' " class="icon-stop"
+                style="color:#d6345b"></span>
+              <span v-if="item.status === '1' && !compareDate(item.endTime)" class="icon-unable" style="color: #9597a0"></span>
+              <span :class="{
+                btn: item.status === '1' && compareDate(item.endTime) === true,
+                btnActive: item.status === '0',
+                stop: item.status === '1' && !compareDate(item.endTime),
+              }">{{
+    compareDate(item.endTime)
+      ? item.status === "1"
+        ? "正常"
+        : "已停止"
+      : "已过期"
+}}</span>
+            </div>
+          </div>
+          <div class="cenText">
+            <div>
+              <span class="tit">App Key:</span><span class="txt">{{ item.appKey }}</span>
+            </div>
+            <div>
+              <span class="tit">服务数:</span><span class="txt">{{ item.remark }}</span>
+            </div>
+            <div>
+              <span class="tit">应用描述:</span><span class="txt">{{ item.description }}</span>
+            </div>
+          </div>
+          <div class="bootto">
+            <el-button v-if="permissionList['ai-application-view-details']" size="small" class="btn view"
+              @click="designDialog(item)">查看详情</el-button>
+            <el-button size="small" class="btn serve" @click="serveManager(item.id)"
+              v-if="permissionList['ai-application-service-mana']">服务管理</el-button>
+            <el-button v-if="permissionList['ai-application-dele']" size="small" class="btn dele"
+              @click="rowDel(item.id)">删除</el-button>
+          </div>
+        </div>
+      </el-col>
+    </el-row>
+    <HuilanDialog title="应用详情" append-to-body width="90%" :visible.sync="designDialogVisible">
+    </HuilanDialog>
+    <AppliServicesManger ref="appliServicesManger" :pagelist="pagelist"></AppliServicesManger>
+    <HuilanDialog title="新建应用" append-to-body width="50%" :visible.sync="addVisible" class="addApli">
+      <avue-form :option="option" v-model="addForm" @submit="save">
+        <template slot="status">
+          <span class="texts">{{ addForm.status ? "已启用" : "未启用" }}</span>
+          <el-switch class="switch" size="small" v-model="addForm.status" active-color="#13ce66"
+            inactive-color="#ff4949">
+          </el-switch>
+        </template>
+      </avue-form>
+    </HuilanDialog>
+  </div>
+</template>
+
+<script>
+import {
+  applicationSave,
+  applicationListByPage,
+  applicationDelete,
+  getServiceNumberByApplicationId,
+} from "@/api/configure/application";
+import { mapGetters } from "vuex";
+import AppliServicesManger from "./appliServicesManger";
+// import nomal from "@/assets/iconfont/normal.png";
+export default {
+  name: "myAppList",
+  components: {
+    AppliServicesManger,
+  },
+  props: {},
+  data() {
+    return {
+      form: {
+        name: null,
+      },
+      addVisible: false,
+      addForm: {
+        status: true,
+      },
+      option: {
+        menuSpan: 24,
+        labelWidth: 100,
+        menuPosition: "right",
+        column: [
+          {
+            label: "应用名称",
+            prop: "name",
+            span: 24,
+            rules: [
+              {
+                required: true,
+                message: "请输入应用名称",
+                trigger: "blur",
+              },
+            ],
+          },
+          {
+            label: "授权截至",
+            prop: "endTime",
+            type: "datetime",
+            format: "yyyy-MM-dd HH:mm:ss",
+            valueFormat: "yyyy-MM-dd HH:mm:ss",
+            span: 24,
+            rules: [
+              {
+                required: true,
+                message: "请选择授权截至时间",
+                trigger: "blur",
+              },
+            ],
+          },
+          {
+            label: "启用状态",
+            prop: "status",
+            span: 24,
+            type: "switch",
+            value: "1",
+            dicData: [
+              {
+                label: "已停用",
+                value: "0",
+              },
+              {
+                label: "已启用",
+                value: "1",
+              },
+            ],
+            rules: [
+              {
+                required: true,
+                message: "请选择启用状态",
+                trigger: "blur",
+              },
+            ],
+          },
+          {
+            label: "应用描述",
+            prop: "description",
+            type: "textarea",
+            // width: 80,
+            span: 24,
+            formslot: true,
+          },
+        ],
+      },
+      page: {
+        size: 9,
+        pageSizes: [9, 27, 45, 90, 180],
+        current: 1,
+        total: 0,
+      },
+      seach: {},
+      designDialogVisible: false,
+      loading: true,
+      data: [],
+      permissionList: null,
+    };
+  },
+  computed: {
+    ...mapGetters(["permission"]),
+    // compareDate(val){
+    //   debugger
+    //   const date = new Date(val)
+    //   const curDate = new Date()
+    //   if(date.getDate() > curDate.getDate){
+    //     return true
+    //   } else {
+    //     return false
+    //   }
+    // }
+  },
+  created() {
+    this.pagelist({ current: 1 });
+    this.permissionList = this.permission;
+  },
+  methods: {
+    compareDate(val) {
+      // const date = new Date(val);
+      // const curDate = new Date();
+      // if (date.getDate() > curDate.getDate()) {
+      //   return true;
+      // } else {
+      //   return false;
+      // }
+      var myDate = new Date;
+      var year = myDate.getFullYear(); //获取当前年
+      var mon = myDate.getMonth() + 1; //获取当前月
+      var date = myDate.getDate(); //获取当前日
+      var hours = myDate.getHours(); //获取当前小时
+      var minutes = myDate.getMinutes(); //获取当前分钟
+      var seconds = myDate.getSeconds(); //获取当前秒
+      var now = year + "-" + mon + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
+      //第一个参数当前时间，第二个过期时间
+      return this.timediff(now, val)
+    },
+    timediff(begin_time, end_time) {
+      //年月日时分秒转换为时间戳
+      let flag = flag
+      let beginTime = (new Date(begin_time).getTime()) / 1000;
+      let endTime = (new Date(end_time).getTime()) / 1000;
+      // var starttime = ''
+      // var endtime = ''
+      if (beginTime <= endTime) {
+        // starttime = beginTime;
+        // endtime = endTime;
+        flag = true
+      } else {
+        // starttime = endTime;
+        // endtime = beginTime;
+        flag = false
+      }
+      //计算天数
+      // var timediff = endtime - starttime;
+      // var days = parseInt(timediff / 86400);
+      //计算小时数
+      // var remain = timediff % 86400;
+      // var hours = parseInt(remain / 3600);
+      //计算分钟数
+      // var remain = remain % 3600;
+      // var mins = parseInt(remain / 60);
+      // var res = days + '天' + hours + '小时' + mins + '分';
+      return flag;
+    },
+    pagelist(page, seach) {
+      const parms = { ...this.page, ...page, ...seach };
+      applicationListByPage({ ...parms }).then((res) => {
+        const data = res.data.data;
+        this.data = data.records;
+        this.page.total = data.total;
+        this.repaceServes(data.records);
+      });
+    },
+    currentChange(val) {
+      this.page.current = val;
+      this.pagelist({ current: val });
+    },
+    designDialog(row) {
+      this.designDialogVisible = true;
+      setTimeout(() => {
+        this.$refs.details.form = {
+          ...row,
+          status: row.status === "1" ? true : false,
+        };
+        this.$refs.details.qustDetail({}, row.id);
+      });
+    },
+    repaceServes(list) {
+      list.map((v) => {
+        getServiceNumberByApplicationId({ id: v.id }).then((res) => {
+          v.remark = res.data.data;
+        });
+      });
+      setTimeout(() => {
+        this.data = list;
+      }, 500);
+    },
+    rowDel(id) {
+      this.$confirm("确定将选择数据删除?", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        applicationDelete({ id }).then((res) => {
+          if (res.data.success) {
+            this.pagelist();
+            this.$message({
+              type: "success",
+              message: "操作成功!",
+            });
+          } else {
+            this.$message({
+              type: "error",
+              message: res.data.msg,
+            });
+          }
+        });
+      });
+    },
+    querySeach() {
+      this.pagelist({}, { name: this.form.name });
+    },
+    serveManager(applicationId) {
+      setTimeout(() => {
+        this.$refs.appliServicesManger.manageVisible = true;
+      }, 800);
+      this.$refs.appliServicesManger.applicationId = applicationId;
+      this.$refs.appliServicesManger.transferCreat(applicationId);
+    },
+    save(form, done) {
+      applicationSave({ ...form, status: form.status ? "1" : "0" }).then(
+        (res) => {
+          // this.onLoad(this.page);
+          if (res.data.success) {
+            this.$message({
+              type: "success",
+              message: "操作成功!",
+            });
+            this.pagelist();
+            this.addVisible = false;
+          } else {
+            this.$message({
+              type: "error",
+              message: res.data.msg,
+            });
+          }
+          done();
+        },
+        (error) => {
+          window.console.log(error);
+        }
+      );
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.wrap {
+  height: 80px;
+  background-color: #ffffff;
+  box-shadow: 0px 6px 16px 4px rgba(6, 7, 46, 0.05);
+  border-radius: 10px 10px 0px 0px;
+}
+
+.topWarp {
+  margin-top: 22px;
+
+  .header {
+    margin-left: 20px;
+    display: inline-block;
+
+    .leBox {
+      font-family: SourceHanSansCN-Bold;
+      font-size: 20px;
+      font-weight: normal;
+      font-stretch: normal;
+      line-height: 36px;
+      letter-spacing: 0px;
+      color: #070b2d;
+    }
+
+    .txt {
+      font-family: SourceHanSansCN-Normal;
+      font-size: 16px;
+      font-weight: normal;
+      font-stretch: normal;
+      letter-spacing: 0px;
+      color: #565863;
+      margin-left: 8px;
+    }
+
+    .status {
+      // justify-content: flex-end
+    }
+  }
+
+  .right {
+    // display: flex;
+    float: right;
+    margin-right: 30px;
+
+    .box {
+      display: flex;
+      height: 0;
+    }
+
+    /deep/ .el-pagination.is-background .el-pager li:not(.disabled).active {
+      background: white;
+      color: #205ac8;
+      font-family: SourceHanSansCN-Normal;
+      font-size: 18px;
+      font-weight: normal;
+      font-stretch: normal;
+      letter-spacing: 0px;
+    }
+
+    /deep/ .el-pagination.is-background .el-pager li {
+      background: white;
+      color: #9597a0;
+      font-family: SourceHanSansCN-Normal;
+      font-size: 18px;
+      font-weight: normal;
+      font-stretch: normal;
+      letter-spacing: 0px;
+    }
+
+    /deep/ .el-pagination .btn-prev {
+      background-color: #ffffff;
+      border-radius: 4px;
+      border: solid 1px #9597a0;
+    }
+
+    /deep/ .el-pagination .btn-next {
+      background-color: #ffffff;
+      border-radius: 4px;
+      border: solid 1px #9597a0;
+    }
+  }
+
+  .input {
+    display: inline-block;
+    margin-left: 20px;
+  }
+
+  .img {
+    display: inline-block;
+    margin-left: 8px;
+    margin-right: 12px;
+    width: 32px;
+    height: 32px;
+    background-color: #205ac8;
+    border-radius: 4px;
+    text-align: center;
+
+    .icon-search_blue {
+      font-size: 26px !important;
+      color: white;
+      cursor: pointer;
+    }
+  }
+}
+
+.cotaner {
+  // margin-left: 10px;
+  // margin-right: 20px;
+  margin-top: 10px;
+  margin-bottom: 40px;
+
+  .item {
+    background: #f0f2f5 !important;
+
+    // border-radius: 10px;
+    // border: solid 1px #eeeeee;
+    &-box {
+      background-color: #ffffff;
+      border-radius: 10px;
+      border: solid 1px #eeeeee;
+    }
+
+    .ledom {
+      margin-right: 20px;
+    }
+
+    .cen {
+      margin: 0 20px;
+    }
+
+    .ri {
+      margin-left: 20px;
+    }
+  }
+
+  .header {
+    // display: inline-block;
+    margin-top: 20px;
+  }
+
+  .le {
+    display: flex;
+  }
+
+  .item {
+    background: white;
+  }
+
+  .img {
+    margin-left: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: #33169e;
+    box-shadow: 0px 4px 8px 1px rgba(7, 11, 45, 0.15);
+    border-radius: 10px;
+  }
+
+  .status {
+    // width: 21px;
+    // height: 21px;
+    float: right;
+    margin-right: 40px;
+    margin-top: -50px;
+
+    .image {
+      width: 22px;
+      height: 22px;
+      display: block;
+      margin-left: 3px;
+      margin: auto;
+    }
+
+    .icon-stop {
+      display: block;
+      font-size: 24px !important;
+      text-align: center;
+      color: #d6345b;
+    }
+
+    .icon-unable {
+      display: block;
+      font-size: 20px !important;
+      text-align: center;
+    }
+
+    .btn {
+      font-family: SourceHanSansCN-Normal;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      // line-height: 36px;
+      letter-spacing: 0px;
+      color: #94c932;
+    }
+
+    .btnActive {
+      font-family: SourceHanSansCN-Normal;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      letter-spacing: 0px;
+      color: #d6345b;
+    }
+
+    .stop {
+      font-family: SourceHanSansCN-Normal;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      letter-spacing: 0px;
+      color: #9597a0;
+    }
+  }
+
+  .text {
+    // display: inline-block;
+    margin-left: 20px;
+    align-items: center;
+    font-family: SourceHanSansCN-Medium;
+    font-size: 20px;
+    font-weight: normal;
+    font-stretch: normal;
+    line-height: 36px;
+    letter-spacing: 0px;
+    color: #070b2d;
+    margin-top: 10px;
+  }
+
+  .cenText {
+    margin-top: 24px;
+
+    .tit {
+      display: inline-block;
+      width: 90px;
+      text-align: right;
+      font-family: SourceHanSansCN-Normal;
+      font-size: 16px;
+      font-weight: normal;
+      font-stretch: normal;
+      line-height: 36px;
+      letter-spacing: 0px;
+      color: #070b2d;
+    }
+
+    .txt {
+      display: inline-block;
+      margin-left: 20px;
+      font-family: SourceHanSansCN-Normal;
+      font-size: 16px;
+      font-weight: normal;
+      font-stretch: normal;
+      line-height: 36px;
+      letter-spacing: 0px;
+      color: #565863;
+    }
+  }
+
+  .bootto {
+    text-align: right;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding-right: 26px;
+
+    .btn {}
+
+    /deep/ .view {
+      // margin-right: 20px;
+      background-color: #ffffff;
+      border-radius: 4px;
+      border: solid 1px #205ac8;
+      font-family: SourceHanSansCN-Normal;
+      font-size: 12px;
+      font-weight: normal;
+      font-stretch: normal;
+      letter-spacing: 0px;
+      color: #205ac8;
+    }
+
+    /deep/ .serve {
+      // margin-right: 26px;
+      background-color: #205ac8;
+      border-radius: 4px;
+      border: solid 1px #c7cad3;
+      font-family: SourceHanSansCN-Normal;
+      font-size: 12px;
+      font-weight: normal;
+      font-stretch: normal;
+      letter-spacing: 0px;
+      color: #ffffff;
+    }
+
+    /deep/ .dele {
+      min-width: 80px;
+      // margin-right: 26px;
+      background-color: #ffffff;
+      border-radius: 4px;
+      border: solid 1px #c7cad3;
+      font-family: SourceHanSansCN-Normal;
+      font-size: 12px;
+      font-weight: normal;
+      font-stretch: normal;
+      letter-spacing: 0px;
+      color: #9597a0;
+    }
+  }
+}
+
+.addApli {
+  .switch {
+    margin-left: 8px;
+    position: relative;
+    top: -1px;
+  }
+}
+</style>

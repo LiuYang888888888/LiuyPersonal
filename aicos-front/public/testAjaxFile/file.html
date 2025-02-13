@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>TESTfILE</title>
+  <script type="text/javascript" src="jq.js"></script>
+</head>
+
+<body>
+  http://172.16.10.149:18887/testAjaxFile/file.html
+
+
+  
+  <div class="a">
+    <hr>
+    SRC
+    <br>
+    <video id="video2" src="http://172.16.10.149:18887/aicos/api/aicos-file/miniofile/downloadByFileType/000000/movie_1665572681608.webm" controls preload="auto" autoplay="true"></video>
+    <hr>
+    <hr>
+    <hr>
+    AJAX
+    <br>
+    <video id="video" :src="vsrc" controls preload="auto" autoplay="true"></video>
+  </div>
+  <script>
+  $(function() {
+      var video = document.querySelector('#video');
+      var mediaSource = new MediaSource();
+      video.src = URL.createObjectURL(mediaSource);
+      mediaSource.addEventListener('sourceopen', sourceOpen);
+
+      function sourceOpen(e) {
+        URL.revokeObjectURL(video.src);
+        // 设置 媒体的编码类型
+        var mime = 'video/webm; codecs="vorbis,vp8"';
+        var mediaSource = e.target;
+        var sourceBuffer = mediaSource.addSourceBuffer(mime);
+        //var videoUrl ='http://172.16.10.149:18887/aicos/api/aicos-file/miniofile/downloadByFileType/000000/2021102623132890015_1665566788320.mp4';
+        var videoUrl = 'http://172.16.10.149:18887/aicos/api/aicos-file/miniofile/downloadByFileType/000000/movie_1665572681608.webm';
+        //var videoUrl ='http://172.16.10.149:18887/aicos/api/aicos-file/miniofile/downloadByFileType/000000/2021102623132890015_1665566788320.mp4';
+
+        fetch(videoUrl).then(function(response) {
+              console.log(response)
+              return response.arrayBuffer();
+            }
+
+          )
+          .then(function(arrayBuffer) {
+              sourceBuffer.addEventListener('updateend', function(e) {
+                  if (!sourceBuffer.updating && mediaSource.readyState === 'open') {
+                    mediaSource.endOfStream();
+
+                    // 在数据请求完成后，我们需要调用 endOfStream()。它会改变 MediaSource.readyState 为 ended 并且触发 sourceended 事件。
+                    video.play().then(function() {}
+
+                    ).catch(function(err) {
+                        console.log(err)
+                      }
+
+                    );
+                  }
+
+                }
+
+              );
+              sourceBuffer.appendBuffer(arrayBuffer);
+            }
+
+          );
+      }
+
+    }
+
+  )
+
+  </script>
+</body>
+
+</html>

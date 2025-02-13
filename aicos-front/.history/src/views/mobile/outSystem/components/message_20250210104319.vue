@@ -1,0 +1,486 @@
+<template>
+  <van-form @submit="onSubmit">
+    <div v-for="(item, index) in list" :key="index">
+      <div v-if="item.type == 'input'">
+        <van-field
+          v-if="!item.hide"
+          :readonly="readonly"
+          v-model="options[item.prop]"
+          :label="item.label"
+          :placeholder="item.label"
+          :rules="[{ required: true, message: '请填写' + item.label }]"
+        >
+          <template #button v-if="item.append">{{ item.append }}</template>
+        </van-field>
+      </div>
+
+      <div v-if="item.type == 'text'" class="wenben">{{ item.label }}</div>
+      <van-field
+        v-if="item.type == 'textarea' && !item.hide"
+        :readonly="readonly"
+        rows="3"
+        autosize
+        v-model="options[item.prop]"
+        type="textarea"
+        :label="item.label"
+        :placeholder="item.label"
+        show-word-limit
+      />
+
+      <van-field
+        v-if="item.type == 'area'"
+        is-link
+        :readonly="readonly"
+        v-model="options[item.prop]"
+        :label="item.label"
+        :placeholder="item.label"
+        @click="showAreaClick"
+      />
+      <van-popup v-model="showArea" round position="bottom">
+        <van-cascader
+          v-model="cascaderValue"
+          title="请选择行政区划"
+          :options="area"
+          @close="showAreaClose"
+          @finish="onFinish"
+        />
+      </van-popup>
+
+      <van-field
+        v-if="item.type == 'choose'"
+        readonly
+        is-link
+        v-model="options[item.prop]"
+        :label="item.label"
+        :placeholder="item.label"
+        @click="showListopen(item, index)"
+      />
+      <van-popup v-model="item.show" position="bottom">
+        <van-picker
+          show-toolbar
+          :columns="item.columns"
+          value-key="name"
+          @confirm="showListvalue"
+          @cancel="showListcancle(item)"
+        />
+      </van-popup>
+
+      <van-field
+        v-if="item.type == 'checkbox'"
+        readonly
+        is-link
+        v-model="options[item.prop]"
+        :label="item.label"
+        :placeholder="item.label"
+        @click="showListopen(item, index)"
+      />
+
+      <van-popup v-model="item.show" position="bottom" v-if="item.type == 'checkbox'">
+        <div class="van-picker__toolbar">
+          <button type="button" class="van-picker__cancel" @click="showListcancle(item)">
+            取消
+          </button>
+          <div class="van-ellipsis van-picker__title">{{ item.label }}</div>
+          <button type="button" class="van-picker__confirm" @click="showListvalue">
+            确认
+          </button>
+        </div>
+        <div class="selectall">
+          <van-radio-group v-model="radio" direction="horizontal">
+            <van-radio name="1" @click="selectAll(item)">全选</van-radio>
+            <van-radio name="2" @click="clearAll(item)">取消全选</van-radio>
+          </van-radio-group>
+        </div>
+        <div class="multiplePicker-content">
+          <van-checkbox-group
+            ref="checkboxGroup"
+            v-model="checkboxValue"
+            @change="change"
+          >
+            <van-cell-group>
+              <van-cell
+                v-for="(item, index) in item.columns"
+                :key="index"
+                :title="item.name"
+                clickable
+                @click="toggle(index)"
+              >
+                <template #right-icon>
+                  <van-checkbox
+                    ref="checkboxes"
+                    shape="square"
+                    :name="item.value"
+                  />
+                </template>
+              </van-cell>
+            </van-cell-group>
+          </van-checkbox-group>
+        </div>
+      </van-popup>
+
+      <van-field
+        v-if="item.type == 'date'"
+        readonly
+        is-link
+        v-model="options[item.prop]"
+        :label="item.label"
+        :placeholder="item.label"
+        @click="showDate(index)"
+      />
+      <van-popup v-model="showdate" position="bottom">
+        <van-datetime-picker
+          v-model="currentDate"
+          type="date"
+          title="选择年月日"
+          @confirm="showListvalue"
+          @cancel="showDatecancle"
+        />
+      </van-popup>
+
+      <van-field :label="item.label" :placeholder="item.label" v-if="item.type == 'upload'" @click="showUpload(item)">
+        <template #input>
+          <van-uploader :disabled="disabled" v-model="uploadImgList" :multiple="multiple" :max-count="item.limit" :max-size="item.fileSize * 1024" :after-read="afterRead" :accept="item.accept" />
+          <div class="tip" v-if="item.tip">{{ item.tip }}</div>
+        </template>
+      </van-field>
+    </div>
+
+    <div style="width: 100%; display: flex; justify-content: space-around; margin-top: 20px; margin-bottom: 40px;">
+      <van-button round block type="danger" native-type="submit" v-if="type != 'view'" style="width: 40%;">保存</van-button>
+      <van-button round block type="default" @click="close" style="width: 40%;">关闭</van-button>
+    </div>
+  </van-form>
+</template>
+
+<script>
+import { Dialog } from 'vant';
+import { apiData, uploadImg } from "@/api/outSystem/agency";
+import {danwei} from "@/api/outSystem/fileManage";
+
+export default {
+  data() {
+    return {
+      cascaderValue: '',
+      showArea: false,
+      showdate: false,
+      area: [],
+      index: 0,
+      readonly: false,
+      disabled: false,
+      currentDate: new Date(),
+      checkboxValue: [],
+      uploadImgList: [],
+      radio: ''
+    };
+  },
+  props: {
+    options: {
+      type: Object,
+      default: () => ({})
+    },
+    list: {
+      type: Array,
+      default: () => ([])
+    },
+    type: {
+      type: String,
+      default: ''
+    },
+    id: {
+      type: String,
+      default: ''
+    }
+  },
+  watch: {
+    options: {
+      handler(newVal, oldVal) {
+        this.options = newVal;
+        newVal && this.load();
+      },
+      deep: true
+    }
+  },
+  created() {
+    this.$nextTick(() => {
+      this.load();
+    });
+  },
+  methods: {
+    load() {
+      if (this.type == 'view') {
+        this.readonly = true;
+        this.disabled = true;
+      }
+      this.list.forEach(item => {
+        if (item.type == 'area') {
+          apiData(item.dicQuery, item.dicUrl, item.dicMethod).then(res => {
+            if (res.data && res.data.data) {
+              this.area = res.data.data.map(e => {
+                e.text = e.name;
+                e.value = e.name;
+                if (e.children && e.children.length > 0) {
+                  e.children = e.children.map(el => {
+                    el.text = el.name;
+                    el.value = el.name;
+                    Reflect.deleteProperty(el, "children");
+                    return el;
+                  });
+                }
+                return e;
+              });
+            } else {
+              console.error('area response is missing expected data:', res.data);
+            }
+          }).catch(error => {
+            console.error('Error fetching area data:', error);
+          });
+        }
+        if (item.type == 'choose') {
+          if (item.dicUrl) {
+            apiData(item.dicQuery, item.dicUrl, item.dicMethod).then(res => {
+              if (res.data && res.data.data) {
+                item.columns = res.data.data;
+                if (item.props && item.props.value == 'value' && this.options[item.prop]) {
+                  const selectedOption = item.columns.find(e => e.value == this.options[item.prop]);
+                  if (selectedOption) {
+                    this.options[item.prop] = selectedOption.name;
+                  }
+                }
+              } else {
+                console.error('choose response is missing expected data:', res.data);
+              }
+            }).catch(error => {
+              console.error('Error fetching choose data:', error);
+            });
+          } else {
+            if (item.props && item.props.value == 'value' && this.options[item.prop]) {
+              const selectedOption = item.columns.find(e => e.value == this.options[item.prop]);
+              if (selectedOption) {
+                this.options[item.prop] = selectedOption.name;
+              }
+            }
+          }
+        }
+        if (item.type == 'checkbox') {
+          if (item.columns.length == 0) {
+            apiData(item.dicQuery, item.dicUrl, item.dicMethod).then(res => {
+              if (res.data && res.data.data) {
+                item.columns = res.data.data.map(e => ({
+                  name: e.name,
+                  value: e.name
+                }));
+              } else {
+                console.error('checkbox response is missing expected data:', res.data);
+              }
+            }).catch(error => {
+              console.error('Error fetching checkbox data:', error);
+            });
+          } else {
+            item.columns = item.columns.map(e => ({
+              name: e.enterprise_name || e.name,
+              value: e.enterprise_name || e.name
+            }));
+            console.log(item.columns);
+          }
+        }
+
+        if
+        if (item.type == 'upload') {
+          if (this.options[item.prop]) {
+            if (!item.multiple) {
+              this.uploadImgList = [{
+                url: '/aicos' + this.options[item.prop]
+              }];
+            }
+          }
+        }
+      });
+    },
+    showAreaClick() {
+      if (this.type != 'view') {
+        this.showArea = true;
+      }
+    },
+    showAreaClose() {
+      this.showArea = false;
+    },
+    showDate(index) {
+      this.index = index;
+      if (this.type == 'view') {
+        this.showdate = false;
+      } else {
+        this.showdate = true;
+      }
+    },
+    showDatecancle() {
+      this.showdate = false;
+    },
+    // 行政区划选择
+    onFinish({ selectedOptions }) {
+      this.showArea = false;
+      this.list.forEach(item => {
+        if (item.type == 'area') {
+          this.options[item.prop] = selectedOptions.map((option) => option.text).join('/');
+        }
+      });
+    },
+    // 下拉列表显示
+    showListopen(item, index) {
+      if (this.type != 'view') {
+        this.index = index;
+        this.list.forEach(e => {
+          if (e.prop == item.prop) {
+            e.show = true;
+          }
+        });
+      }
+    },
+    // 下拉列表关闭
+    showListcancle(item) {
+      this.list.forEach(e => {
+        if (e.prop == item.prop) {
+          e.show = false;
+        }
+      });
+    },
+    // 下拉值确定
+    showListvalue(value) {
+      if (this.list[this.index].type == 'date') {
+        var date = value;
+        var seperator1 = "-";
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+        if (month >= 1 && month <= 9) {
+          month = "0" + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+          strDate = "0" + strDate;
+        }
+        value = date.getFullYear() + seperator1 + month + seperator1 + strDate;
+      }
+      let prop = this.list[this.index].prop;
+      this.list[this.index].show = false;
+      this.showdate = false;
+      if (this.list[this.index].type == 'checkbox') {
+        if (this.checkboxValue.length > 0) {
+          this.options[prop] = this.checkboxValue.join(',');
+        } else {
+          this.options[prop] = '';
+        }
+      } else if (this.list[this.index].type == 'choose') {
+        this.options[prop] = value.name;
+      } else {
+        this.options[prop] = value;
+      }
+    },
+    selectAll(item) {
+      this.checkboxValue = item.columns.map(e => e.name);
+    },
+    clearAll() {
+      this.checkboxValue = [];
+    },
+    // 新增
+    onSubmit() {
+      Dialog.confirm({
+        title: '保存',
+        message: '确认保存？',
+      })
+        .then(() => {
+          this.list.forEach(item => {
+            if (item.type == 'choose') {
+              if (item.props && item.props.value == 'value' && this.options[item.prop]) {
+                item.columns.forEach(e => {
+                  if (e.name == this.options[item.prop]) {
+                    this.options[item.prop] = e.value;
+                  }
+                });
+              }
+            }
+          });
+
+          if (this.type == 'add') {
+            this.$emit('addData', this.options);
+          }
+
+          if (this.type == 'edit') {
+            this.options.id = this.id;
+            this.$emit('editData', this.options);
+          }
+        })
+        .catch(() => {
+          // on cancel
+        });
+    },
+    // 上传
+    afterRead(file) {
+      // 此时可以自行将文件上传至服务器
+      let forms = new FormData();
+      forms.append("file", file.file); // 获取上传图片信息
+      uploadImg(forms).then(res => {
+        this.list.forEach(item => {
+          if (item.type == 'upload') {
+            if (!item.multiple) {
+              this.options[item.prop] = res.data.data.newFileName;
+            }
+          }
+        });
+      }).catch(error => {
+        console.error('Error uploading file:', error);
+      });
+    },
+    // 点击附件下载
+    showUpload(item) {
+      if (item.listType == 'text') {
+        // 创建a标签
+        var a = document.createElement('a');
+        var url = this.options[item.prop];
+        a.href = url;
+        a.download = this.options[item.prop];
+        a.click();
+        window.URL.revokeObjectURL(url);
+      }
+    },
+    // 关闭
+    close() {
+      this.$emit('close');
+    },
+    toggle(index) {
+      this.$refs.checkboxes[index].toggle();
+    },
+  }
+}
+</script>
+
+<style scoped>
+.tip {
+  font-size: 14px;
+  color: #af2c30;
+}
+.wenben {
+  font-size: 1rem;
+  font-weight: 600;
+  height: 3rem;
+  line-height: 3rem;
+  margin-left: .5rem;
+}
+
+.multiplePicker-content {
+  max-height: 50vh;
+  overflow-y: auto;
+}
+/deep/ .van-checkbox__icon--checked .van-icon {
+  background-color: #af2c30 !important;
+  border-color: #af2c30 !important;
+}
+/deep/.van-picker__confirm {
+  color: #af2c30 !important;
+}
+.selectall {
+  margin: 10px 10px;
+  font-size: 14px !important;
+}
+/deep/ .van-radio__icon--checked .van-icon {
+  background-color: #af2c30 !important;
+  border-color: #af2c30 !important;
+}
+</style>

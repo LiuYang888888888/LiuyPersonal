@@ -1,0 +1,90 @@
+<template>
+  <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+    <el-form-item label="召回来源：">
+      <el-input v-model="form.recallWay" readonly class="recallWay" style="border: none;width: 70%"></el-input>
+    </el-form-item>
+    <el-form-item label="流量占比：" prop="trafficRateData">
+      <el-input v-model="form.trafficRateData" style="width: 70%"></el-input>
+    </el-form-item>
+  </el-form>
+</template>
+
+<script>
+export default {
+  props: {
+    strategyId: {
+      type: String,
+      default: ''
+    },
+    trafficRate: {
+      type: String,
+      default: ''
+    },
+    editType: {
+      type: String,
+      default: ''
+    },
+  },
+  data() {
+    var checkRate = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('请输入流量占比'));
+      }
+      setTimeout(() => {
+        if (Number.isInteger(value*1) == false) {
+          return callback(new Error('请输入整数'));
+        } else {
+          callback()
+        }
+      }, 1000);
+    };
+    return {
+      form: {
+        recallWay: '',
+        trafficRateData: '',
+      },
+      rules: {
+        trafficRateData: [
+          { required: true, message: '请输入流量占比', trigger: 'blur' },
+          { min: 1, max: 3, message: '长度不可超过3个字符', trigger: 'blur' },
+          { required: true,validator: checkRate, trigger: 'blur' }
+        ],
+      }
+    }
+  },
+  mounted() {
+    this.form.trafficRateData = this.trafficRate;
+    if(this.editType == '1') {
+      this.form.recallWay = '全部知识库召回';
+    } else if (this.editType == '2') {
+      this.form.recallWay = '意图下关联知识召回'
+    } else if (this.editType == '3') {
+      this.form.recallWay = '全部知识库召回'
+    }
+  },
+  methods: {
+    submit() {
+      this.$refs.form.validate(async (valid/*, done, msg*/) => {
+        var trafficRateData = this.form.trafficRateData;
+        var editType = this.editType;
+        if (valid) {
+          this.$emit('addOrEditEmitEvent',{
+            trafficRateData,
+            editType
+          })
+        }
+      })
+    }
+  }
+
+}
+</script>
+
+<style lang="scss" scoped>
+/deep/.recallWay .el-input__inner {
+  border: none !important;
+}
+/deep/.el-form-item__error {
+  left: 120px !important;
+}
+</style>

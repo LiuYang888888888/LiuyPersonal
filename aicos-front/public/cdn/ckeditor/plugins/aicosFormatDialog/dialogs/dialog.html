@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>一键排版</title>
+  <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+  <form class="format-form">
+    <fieldset>
+      <legend>保留选项：</legend>
+      <label for="keep-all"><input type="checkbox" name="keepAll" id="keep-all" value="1">保留所有标签</label>
+      <label for="keep-list"><input type="checkbox" name="keepList" id="keep-list" value="1">保留列表</label>
+      <label for="keep-table"><input type="checkbox" name="keepTable" id="keep-table" value="1">保留表格</label>
+      <label for="keep-image"><input type="checkbox" name="keepImage" id="keep-image" value="1">保留图片</label>
+      <label for="keep-object"><input type="checkbox" name="keepObject" id="keep-object" value="1">保留对象</label>
+      <label for="keep-link"><input type="checkbox" name="keepLink" id="keep-link" value="1">保留超链接</label>
+      <label for="keep-table-style"><input type="checkbox" name="keepTableStyle" id="keep-table-style" value="1">保留表格样式</label>
+    </fieldset>
+    <fieldset>
+      <legend>去除选项：</legend>
+      <label for="remove-empty-line"><input type="checkbox" name="removeEmptyLine" id="remove-empty-line" value="1">去除空行</label>
+      <label for="remove-extra-spaces"><input type="checkbox" name="removeExtraSpaces" id="remove-extra-spaces" value="1">去除多余空格</label>
+      <label for="remove-hidden-elements"><input type="checkbox" name="removeHiddenElements" id="remove-hidden-elements" value="1">去除隐藏域</label>
+      <label for="remove-all-attributes"><input type="checkbox" name="removeAllAttributes" id="remove-all-attributes" value="1">去除所有属性</label>
+      <label for="remove-style"><input type="checkbox" name="removeStyle" id="remove-style" value="1">去除样式属性</label>
+      <label for="remove-event"><input type="checkbox" name="removeEvent" id="remove-event" value="1">去除事件属性</label>
+    </fieldset>
+    <fieldset>
+      <legend>增效选项：</legend>
+      <div class="format-options">
+        <label for="space-before-paragraph-checkbox">
+          <input type="checkbox" name="spaceBeforeParagraphCheckbox" id="space-before-paragraph-checkbox" value="1">段前
+          <input type="number" name="spaceBeforeParagraph" id="space-before-paragraph" min="0.1">
+        </label>
+        <label for="space-after-paragraph-checkbox">
+          <input type="checkbox" name="spaceAfterParagraphCheckbox" id="space-after-paragraph-checkbox" value="1">段后
+          <input type="number" name="spaceAfterParagraph" id="space-after-paragraph" min="0.1">
+        </label>
+        <label for="line-height-checkbox">
+          <input type="checkbox" name="lineHeightCheckbox" id="line-height-checkbox" value="1">行距
+          <input type="number" name="lineHeight" id="line-height"min="0.1">
+        </label>
+        <label for="font-family">
+          <select id="font-family" name="fontFamily"></select>
+        </label>
+        <label for="font-size">
+          <select id="font-size" name="fontSize"></select>
+        </label>
+        <label for="image-width-checkbox">
+          <input type="checkbox" name="imageWidthCheckbox" id="image-width-checkbox" value="1">图片宽度
+          <input type="text" name="imageWidth" id="image-width">
+        </label>
+        <label for="image-height-checkbox">
+          <input type="checkbox" name="imageHeightCheckbox" id="image-height-checkbox" value="1">图片高度
+          <input type="text" name="imageHeight" id="image-height">
+        </label>
+      </div>
+      <div class="format-options">
+        <label for="text-indent"><input type="checkbox" name="textIndent" id="text-indent" value="1">首行缩进2字</label>
+        <label for="text-align"><input type="checkbox" name="textAlign" id="text-align" value="1">两端对齐</label>
+        <label for="br-to-p"><input type="checkbox" name="brToP" id="br-to-p" value="1">&lt;BR&gt;转&lt;P&gt;</label>
+        <label for="border-collapse"><input type="checkbox" name="borderCollapse" id="border-collapse" value="1">单线表格</label>
+        <label for="image-center"><input type="checkbox" name="imageCenter" id="image-center" value="1">图片居中</label>
+      </div>
+      <div class="format-options">
+        <label for="remove-noise-words"><input type="checkbox" name="removeNoiseWords" id="remove-noise-words" value="1">去除干扰字</label>
+        <label for="remove-noise-words-auto"><input type="radio" name="removeNoiseWordsType" id="remove-noise-words-auto" value="auto">自动检测</label>
+        <label for="remove-noise-words-cls">
+          <input type="radio" name="removeNoiseWordsType" id="remove-noise-words-cls" value="class">干扰字类
+          <input type="text" name="noiseWordsCls"/>
+        </label>
+        <label for="remove-noise-words-color">
+          <input type="radio" name="removeNoiseWordsType" id="remove-noise-words-color" value="color">干扰字色
+          <input type="text" name="noiseWordsColor"/>
+        </label>
+        <label for="full-angle-to-half-angle"><input type="checkbox" name="fullAngleToHalfAngle" id="full-angle-to-half-angle" value="1">全角转半角</label>
+      </div>
+      <label for="unwrap-elements">自定义清除标签：<input type="text" style="width: 300px;" name="unWrapElements" id="unwrap-elements" placeholder="多个标签用英文逗号分割，例如：section,h1"></label>
+    </fieldset>
+  </form>
+  <script type="text/javascript" src="./html-formatter.umd.js"></script>
+  <script type="text/javascript" src="./index.js"></script>
+</body>
+</html>

@@ -1,0 +1,366 @@
+.kw-header {
+  text-align: right;
+}
+
+.kw-hasLeft-container {
+  position: relative;
+  padding-left: 250px;
+}
+
+
+//分栏左侧布局
+.kw-left-container {
+  position: absolute;
+  left: 0;
+  width: 250px;
+  background-color: #fff;
+  margin: 0 -7px;
+  // overflow: auto;
+}
+
+//分栏右侧布局
+.kw-right-container {
+  background-color: #fff;
+  margin: 0 0 0 6px;
+  padding: 10px 0;
+  // overflow: auto;
+}
+
+//有padding并背景为白色
+.kw-base-container {
+  height: 100%;
+  padding: 20px;
+  background: #fff;
+  // overflow: auto;
+
+  .el-row {
+    background: #ffff;
+  }
+}
+
+//存在使用tabs的情况
+.kw-tabs-base-container {
+  height: 100%;
+  padding: 20px;
+  background: #fff;
+
+  .el-tabs {
+    // height: 100%;
+
+    .el-tabs__content {
+      /*height: calc(100% - 40px);*/
+    }
+  }
+
+  .el-row {
+    background: #ffff;
+  }
+}
+
+//一般用于左右两栏布局且作为最顶层元素使用,且每一栏都需要padding,配合kw-base-container使用
+.kw-base-noPadding-container {
+  height: 100%;
+  background-color: #fff;
+
+  .el-row {
+    background: #ffff;
+  }
+}
+
+.kw-build-button {
+  padding: 0 12px;
+  height: 32px;
+  line-height: 32px;
+  font-size: 14px;
+  /*background: #5ebf2e;*/
+  color: #fff;
+
+
+}
+
+.kw-primary-button {
+  margin-left: 10px;
+  padding: 0 12px;
+  height: 32px;
+  line-height: 32px;
+
+  // color: #fff;
+  font-size: 14px;
+
+  // &:hover {
+  //   background-color: #308dee;
+  //   color: #fff;
+  // }
+
+  // &:focus {
+  //   background-color: #308dee;
+  //   color: #fff;
+  // }
+}
+
+.kw-normal-button {
+  margin-left: 10px;
+  padding: 0 12px;
+  height: 32px;
+  line-height: 32px;
+  background-color: #ffffff;
+  color: #070b2d;
+  font-size: 14px;
+
+  &:hover {
+    background-color: #fff;
+    color: #070b2d;
+  }
+
+  &:focus {
+    background-color: #fff;
+    color: #070b2d;
+  }
+}
+
+.kw-batch-button {
+  transition: 0ms;
+
+  .el-dropdown-selfdefine {
+    margin-left: 10px;
+    padding: 0 12px;
+    height: 32px;
+    line-height: 32px;
+    // background-color: #308dee;
+    // color: #fff;
+    font-size: 14px;
+    border-color: none;
+    transition: 0ms;
+
+    .el-icon-arrow-down {
+      margin-left: 10px;
+    }
+
+    // &:hover {
+    //   background-color: #308dee;
+    //   color: #fff;
+    // }
+
+    // &:focus {
+    //   background-color: #308dee;
+    //   color: #fff;
+    // }
+
+  }
+}
+
+.kw-warning-button {
+  margin-left: 10px;
+  padding: 0 12px;
+  height: 32px;
+  line-height: 32px;
+  font-size: 14px;
+  background-color: #eda432;
+  color: #fff;
+
+  &:hover {
+    background-color: #eda432;
+    color: #fff;
+  }
+
+  &:focus {
+    background-color: #eda432;
+    color: #fff;
+  }
+}
+
+.kw-danger-button {
+  margin-left: 10px;
+  padding: 0 12px;
+  height: 32px;
+  line-height: 32px;
+  font-size: 14px;
+
+  color: #fff;
+
+
+}
+
+.kw-default-button {
+  margin-left: 10px;
+  padding: 0 12px;
+  height: 32px;
+  line-height: 32px;
+  font-size: 14px;
+
+}
+
+#kw-form-container {
+  padding: 20px 0 10px;
+  display: flex;
+  justify-content: flex-end;
+
+  .kw-form-type {
+    width: 200px !important;
+    margin-right: 10px;
+    margin-bottom: 10px;
+
+    .el-input__inner {
+      font-size: 14px;
+      color: #070b2d;
+
+      &::placeholder {
+        color: #9597a0;
+      }
+    }
+  }
+
+  .kw-search-btn {
+    padding: 5px;
+
+    i {
+      font-size: 20px;
+    }
+  }
+
+  .kw-reset-btn {
+    padding: 5px;
+
+    i {
+      font-size: 20px;
+    }
+  }
+
+
+  // .kw-search-btn {
+  //   width: 40px;
+  //   height: 40px;
+  //   padding: 0;
+  // }
+
+  // .kw-reset-btn {
+  //   width: 40px;
+  //   height: 40px;
+  //   padding: 0;
+  // }
+}
+
+// .kw-del-btn {
+//   color: #ff0000;
+
+//   &:hover {
+//     color: #ff0000;
+//   }
+
+//   &:focus {
+//     color: #ff0000;
+//   }
+
+//   &:active {
+//     color: #ff0000;
+//   }
+// }
+
+.kw-delete-color {
+  background: #ff6867;
+
+  &:hover {
+    background: #ff4948;
+  }
+
+  &:focus {
+    background: #ff4948;
+
+  }
+}
+
+.kw-btn-blue {
+  background: #409eff;
+  border-color: #409eff;
+  color: #fff;
+
+  &:hover {
+    background: #409eff;
+    color: #fff;
+    border-color: #409eff;
+  }
+
+  &:focus {
+    background: #409eff;
+    color: #fff;
+    border-color: #409eff;
+  }
+}
+
+.kw-btn-red {
+  background: #f05050;
+  border-color: #f05050;
+
+  &:hover {
+    background: #f05050;
+    color: #fff;
+  }
+
+  &:focus {
+    background: #f05050;
+    color: #fff;
+  }
+}
+
+.kw-btn-green {
+  background: #5ebf2e;
+  border-color: #5ebf2e;
+
+  &:hover {
+    background: #5ebf2e;
+    color: #fff;
+  }
+
+  &:focus {
+    background: #5ebf2e;
+    color: #fff;
+  }
+}
+.kw-btn-purple {
+  background: #8b36d9;
+  border-color: #8b36d9;
+
+  &:hover {
+    background: #8b36d9;
+    color: #fff;
+  }
+
+  &:focus {
+    background: #8b36d9;
+    color: #fff;
+  }
+}
+.kw-btn-orange {
+  background: #eda432;
+  border-color: #eda432;
+
+  &:hover {
+    background: #eda432;
+    color: #fff;
+  }
+
+  &:focus {
+    background: #eda432;
+    color: #fff;
+  }
+}
+
+.kw-btn-skyblue {
+  background: #4fc1b0;
+  border-color: #4fc1b0;
+}
+
+.kw-btn-gray {
+  background-color: #fff;
+  color: #333;
+
+  &:hover {
+    background-color: #fff;
+    color: #333;
+  }
+
+  &:focus {
+    background-color: #fff;
+    color: #333;
+  }
+}

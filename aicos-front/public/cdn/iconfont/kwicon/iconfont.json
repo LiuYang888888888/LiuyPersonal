@@ -1,0 +1,23 @@
+{
+  "id": "2640457",
+  "name": "aicos",
+  "font_family": "kwFont",
+  "css_prefix_text": "kw",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "1111304",
+      "name": "收藏",
+      "font_class": "shoucangfill",
+      "unicode": "e627",
+      "unicode_decimal": 58919
+    },
+    {
+      "icon_id": "19911515",
+      "name": "取消收藏",
+      "font_class": "quxiaoshoucang_huaban1",
+      "unicode": "e611",
+      "unicode_decimal": 58897
+    }
+  ]
+}

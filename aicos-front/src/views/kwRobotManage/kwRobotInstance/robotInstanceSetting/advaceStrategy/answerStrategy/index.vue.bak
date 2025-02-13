@@ -1,0 +1,108 @@
+<template>
+  <div class="answer-strategy-index">
+    <el-collapse v-model="activeNames" @change="handleChange">
+      <el-collapse-item title="基础策略" name="1">
+        <div class="strategy-body">
+          <BasicStrategy v-if="isSessionFlag && isAnswerFlag" :sessionDatas="sessionDatas" :editData="baseStrategyList" />
+        </div>
+      </el-collapse-item>
+      <el-collapse-item title="自定义应答模块策略" name="2">
+        <div class="strategy-body">
+          <CustomStrategy :sessionDatas="sessionDatas" :editData="customStrategyList" v-if="isSessionFlag && isAnswerFlag" />
+        </div>
+      </el-collapse-item>
+      <el-collapse-item title="应答置信度" name="3">
+        <div class="strategy-body">
+          <ResponseConfidence v-if="isAnswerFlag" :editData="trusted" />
+        </div>
+      </el-collapse-item>
+      <el-collapse-item title="会话模块拒识配置" name="4">
+        <div class="strategy-body">
+          <SessionModule />
+        </div>
+      </el-collapse-item>
+    </el-collapse>
+  </div>
+
+</template>
+
+<script>
+import {mapGetters} from 'vuex';
+import BasicStrategy from './basicStrategy';
+import CustomStrategy from './customStrategy';
+import ResponseConfidence from './responseConfidence';
+import SessionModule from './sessionModule';
+import {getSessionUrl, getAnswerStrategyUrl} from '@/api/kwRobot/kwRobotInstance/robotInstanceSetting/advaceStrategy/answerStrategy.js';
+export default {
+  name: "",
+  data() {
+    return {
+      botId: '',
+      strategyId: '',
+      activeNames: ['1', '2', '3', '4'],
+      sessionDatas: [], // 会话模块
+      isSessionFlag: false, // 会话接口是否返回成功
+      isAnswerFlag: false, // 反显的数据
+      baseStrategyList: [], // 基础策略
+      customStrategyList: [], // 自定义策略
+      trusted: '', // 可信度
+    }
+  },
+  components: {
+    BasicStrategy,
+    CustomStrategy,
+    ResponseConfidence,
+    SessionModule
+  },
+  computed: {
+    // 计算属性
+    ...mapGetters(['botObj', 'instanceObj'])
+  },
+  methods: {
+    handleChange(val) {
+      console.log(val);
+    }
+  },
+  created() {
+    this.botId = this.botObj.id;
+    this.strategyId = this.instanceObj.id;
+
+    getSessionUrl(this.botId).then(res => {
+      res = res.data;
+      if (res.code == 200) {
+        this.sessionDatas = res.data.map((item) => {
+          return item;
+        });
+
+        this.isSessionFlag = true;
+      }
+    });
+
+    // 反显数据
+    getAnswerStrategyUrl(this.strategyId).then((res) => {
+      res = res.data;
+      if (res.code == 200) {
+        this.baseStrategyList = res.data.baseStrategyList;
+        this.customStrategyList = res.data.customStrategyList;
+        this.trusted = res.data.trusted;
+        this.isAnswerFlag = true;
+      }
+    })
+  },
+  mounted() {
+
+  },
+  destroyed() {
+
+  }
+}
+</script>
+
+<style scoped lang="scss">
+  .answer-strategy-index {
+    padding: 0 30px;
+  }
+  .strategy-body {
+    padding: 0 30px;
+  }
+</style>

@@ -1,0 +1,56 @@
+export default {
+  formsetting: {
+    EnglishName: "EnglishName",
+    ChineseName: "ChineseName",
+    displayType: "DisplayType",
+    alias: "Alias",
+    required: "Required",
+    answerDisplayEle: "AnswerDisplayElements",
+    maximumCharacters: "MaximumNumberOfCharacters",
+    minimumCharacters: 'MinimumNumberOfCharacters',
+    sort: "Sort",
+    detectionType: "DetectionType",
+
+    noParity: 'NoParity',
+    phoneNumber: 'PhoneNumber',
+    landlineNumber: 'LandlineNumber',
+    IDCard: 'IDCard',
+    mailbox: 'Mailbox',
+    digit: 'Digit',
+    letter: 'Letter',
+    string: 'String',
+    integer: 'Integer',
+    decimal: 'Decimal',
+    date: 'Date',
+    selections: "Selections",
+
+    dataPermissions: "DataPermissions",
+
+    formName: "FormName",
+
+    text: "Text",
+    textBox: "TextBox",
+    textField: "TextField",
+    textTieldAnnex: "TextField（IncludingAttachments）",
+    select: "Select",
+    radio: "Radio",
+    check: "Check",
+    dateControl: "DateControl",
+    attachmentControl: "AttachmentControl",
+    imageUpload: "ImageUpload",
+    editor: "Editor",
+    successfullySet: 'Successfully Set!',
+    deleteForm: 'Delete Form',
+    gotIt: 'Got It',
+
+    isItMandatory: 'IsItMandatory',
+
+    selectData: 'Please select data',
+    selectDeleteTips: 'Please select the form to delete',
+    deleteTips: 'Are you sure you want to delete the form?',
+    cannotDeleteTips: 'This form has been referenced by the form knowledge classification and cannot be deleted. Please clear the association relationship and try again!',
+    charactersTips: 'The minimum number of characters cannot be greater than the maximum number of characters',
+    positiveNumberTips: 'Please enter a positive number',
+    multipleDataTips: 'Multiple data "#####" segmentation',
+  }
+}

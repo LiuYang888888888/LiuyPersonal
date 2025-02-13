@@ -1,0 +1,147 @@
+// 菜单图标
+.menu-icon-img {
+  display: inline-block;
+  line-height: 1;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+
+  &:before {
+    content: '\3000'
+  }
+
+  &.help-center {
+    background-image:url('~@/assets/desk/help-center.svg')
+  }
+  &.app-market {
+    background-image:url('~@/assets/desk/app-market.svg')
+  }
+  &.authorization-center {
+    background-image:url('~@/assets/desk/authorization-center.svg')
+  }
+  &.desplay-setting {
+    background-image:url('~@/assets/desk/desplay-setting.svg')
+  }
+  &.flow-design {
+    background-image:url('~@/assets/desk/flow-design.svg')
+  }
+  &.form-design {
+    background-image:url('~@/assets/desk/form-design.svg')
+  }
+  &.knowledge-graph {
+    background-image:url('~@/assets/desk/knowledge-graph.svg')
+  }
+  &.log-mgr {
+    background-image:url('~@/assets/desk/log-mgr.svg')
+  }
+  &.message-center {
+    background-image:url('~@/assets/desk/message-center.svg')
+  }
+  &.resource-center {
+    background-image:url('~@/assets/desk/resource-center.svg')
+  }
+  &.system-setting {
+    background-image:url('~@/assets/desk/system-setting.svg')
+  }
+  &.user-center {
+    background-image:url('~@/assets/desk/user-center.svg')
+  }
+  &.user-mgr {
+    background-image:url('~@/assets/desk/user-mgr.svg')
+  }
+  &.ai-center {
+    background-image:url('~@/assets/desk/ai-center.svg')
+  }
+  &.my-work {
+    background-image:url('~@/assets/desk/my-work.svg')
+  }
+  &.robot-manage {
+    background-image:url('~@/assets/desk/robot-manage.svg')
+  }
+  &.knowledge-center {
+    background-image:url('~@/assets/desk/knowledge-center.svg')
+  }
+
+
+  &.menu-website {
+    background-image:url('~@/assets/desk/menuIcon/menu-website.svg')
+  }
+  &.information-disclosure {
+    background-image:url('~@/assets/desk/menuIcon/information-disclosure.svg')
+  }
+  &.hot-12345 {
+    background-image:url('~@/assets/desk/menuIcon/hot-12345.svg')
+  }
+  &.online-robot {
+    background-image:url('~@/assets/desk/menuIcon/online-robot.svg')
+  }
+  &.work-order-center {
+    background-image:url('~@/assets/desk/menuIcon/work-order-center.svg')
+  }
+  &.Intelligent-quality-inspection {
+    background-image:url('~@/assets/desk/menuIcon/Intelligent-quality-inspection.svg')
+  }
+  &.ai-3d {
+    background-image:url('~@/assets/desk/menuIcon/ai-3d.svg')
+  }
+  &.ai-meta {
+    background-image:url('~@/assets/desk/menuIcon/ai-meta.svg')
+  }
+  &.community-mgr {
+    background-image:url('~@/assets/desk/menuIcon/community-mgr.svg')
+  }
+  &.situation-awareness {
+    background-image:url('~@/assets/desk/menuIcon/situation-awareness.svg')
+  }
+  &.ai-cds {
+    background-image:url('~@/assets/desk/menuIcon/ai-cds.svg')
+  }
+  &.ai-cim {
+    background-image:url('~@/assets/desk/menuIcon/ai-cim.svg')
+  }
+  &.ai-center-mgr {
+    background-image:url('~@/assets/desk/menuIcon/ai-center-mgr.svg')
+  }
+  &.bi-center-mgr {
+    background-image:url('~@/assets/desk/menuIcon/bi-center-mgr.svg')
+  }
+  &.resource-center-mgr {
+    background-image:url('~@/assets/desk/menuIcon/resource-center-mgr.svg')
+  }
+  &.kl-center-mgr {
+    background-image:url('~@/assets/desk/menuIcon/kl-center-mgr.svg')
+  }
+  &.api-center {
+    background-image:url('~@/assets/desk/menuIcon/api-center.svg')
+  }
+  &.form-engine {
+    background-image:url('~@/assets/desk/menuIcon/form-engine.svg')
+  }
+  &.flow-engine {
+    background-image:url('~@/assets/desk/menuIcon/flow-engine.svg')
+  }
+  &.task-engine {
+    background-image:url('~@/assets/desk/menuIcon/task-engine.svg')
+  }
+  &.plugin-engine {
+    background-image:url('~@/assets/desk/menuIcon/plugin-engine.svg')
+  }
+  &.integrate-mgr {
+    background-image:url('~@/assets/desk/menuIcon/integrate-mgr.svg')
+  }
+  &.safe-mgr {
+    background-image:url('~@/assets/desk/menuIcon/safe-mgr.svg')
+  }
+  &.service-monitoring {
+    background-image:url('~@/assets/desk/menuIcon/service-monitoring.svg')
+  }
+  &.micro-service-mgr {
+    background-image:url('~@/assets/desk/menuIcon/micro-service-mgr.svg')
+  }
+  &.cluster-mgr {
+    background-image:url('~@/assets/desk/menuIcon/cluster-mgr.svg')
+  }
+  &.gateway-mgr {
+    background-image:url('~@/assets/desk/menuIcon/gateway-mgr.svg')
+  }
+}

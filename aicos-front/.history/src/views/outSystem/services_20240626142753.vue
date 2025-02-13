@@ -1,0 +1,725 @@
+<template>
+  <basic-container>
+    <!-- <HuilanBasicToolbar style="margin-top: 0;text-align: left;">
+      <el-button type="primary" size="small" @click="comFormMagAdd">新增</el-button>
+    </HuilanBasicToolbar> -->
+    <avue-crud :option="listOption" :table-loading="loading" :data="listData" ref="listRef" v-model="listForm"
+      :page.sync="page" :permission="permissionList" :before-open="beforeOpen" :before-close="beforeClose"
+      @search-change="searchChange" @search-reset="searchReset" @selection-change="selectionChange"
+      @current-change="currentChange" @size-change="sizeChange" @refresh-change="refreshChange" @on-load="onLoad"
+      @row-save="rowSave" @row-update="rowUpdate">
+      <template v-slot:menu="scope">
+        <el-button type="text" size="small" @click="comFormMagView(scope.row)">查看
+        </el-button>
+        <el-button type="text" size="small" @click="comFormMagUpdate(scope.row)">编辑
+        </el-button>
+        <el-button type="text" size="small" @click="comFormMagDel(scope.row)">删除
+        </el-button>
+      </template>
+    </avue-crud>
+  </basic-container>
+</template>
+
+<script>
+import { mapGetters } from "vuex";
+import {
+  getListDataPro,
+  saveOrUpdateListDataPro,
+  delListDataPro
+} from "@/api/outSystem/agency";
+
+export default {
+  data () {
+    return {
+      loading: false,
+      page: {
+        pageSize: 10,
+        currentPage: 1,
+        total: 0,
+        pageSizes: [10, 20, 30, 40, 50, 100],
+      },
+      listForm: {},
+      selectionList: [],
+      query: {},
+      listData: [],
+      listOption: {
+        height: 'auto',
+        align: 'center',
+        searchShow: true,
+        tip: false,
+        border: true,
+        addBtn: false,
+        editBtn: false,
+        delBtn: false,
+        index: true,
+        indexLabel: '序号',
+        indexWidth: 100,
+        viewBtn: false,
+        selection: true,
+        labelPosition: 'right',
+        labelSuffix: '',
+        labelWidth: 120,
+        gutter: 0,
+        menuPosition: 'center',
+        isCustom: false,
+        column: [
+          {
+            type: 'input',
+            label: '服务名称',
+            span: 16,
+            display: true,
+            hideLabel: false,
+            prop: 'fuwmc',
+            isListDisplay: true,
+            searchSpan:5,
+            search: true
+          },
+          {
+            type: 'input',
+            label: '发布者',
+            span: 16,
+            display: true,
+            hideLabel: false,
+            prop: 'fabz',
+            isListDisplay: true,
+          },
+          {
+            type: 'input',
+            label: '联系人',
+            span: 16,
+            display: true,
+            hideLabel: false,
+            prop: 'lianxr',
+            isListDisplay: true,
+          },
+          {
+            type: 'input',
+            label: '联系电话',
+            span: 16,
+            display: true,
+            hideLabel: false,
+            prop: 'lianxdh',
+            isListDisplay: true,
+          },
+          {
+            type: 'input',
+            label: '电子邮箱',
+            span: 16,
+            display: true,
+            hideLabel: false,
+            prop: 'dianzyx',
+            isListDisplay: true,
+          },
+          {
+            type: 'select',
+            label: '服务领域',
+            dicData: [
+              {
+                label: '选项一',
+                value: '0'
+              },
+              {
+                label: '选项二',
+                value: '1'
+              },
+              {
+                label: '选项三',
+                value: '2'
+              }
+            ],
+            cascaderItem: [],
+            span: 16,
+            display: true,
+            props: {
+              label: 'label',
+              value: 'value'
+            },
+            hideLabel: false,
+            prop: 'fuwly',
+            isListDisplay: true,
+            search: true,
+            searchSpan:4,
+          },
+          {
+            type: 'textarea',
+            label: '服务范围',
+            span: 16,
+            display: true,
+            hideLabel: false,
+            prop: 'fuwfw',
+            isListDisplay: true,
+          },
+          {
+            type: 'input',
+            label: '服务价格',
+            span: 16,
+            display: true,
+            hideLabel: false,
+            prop: 'jiag',
+            isListDisplay: true,
+          },
+          {
+            type: 'select',
+            label: '审核状态',
+            dicData: [
+              {
+                label: '选项一',
+                value: '0'
+              },
+              {
+                label: '选项二',
+                value: '1'
+              },
+              {
+                label: '选项三',
+                value: '2'
+              }
+            ],
+            cascaderItem: [],
+            span: 16,
+            display: false,
+            props: {
+              label: 'label',
+              value: 'value'
+            },
+            hideLabel: false,
+            prop: 'shenhzt',
+            isListDisplay: true,
+            search: true,
+            searchSpan:4,
+          },
+          {
+            type: 'select',
+            label: '审核理由',
+            dicData: [
+              {
+                label: '选项一',
+                value: '0'
+              },
+              {
+                label: '选项二',
+                value: '1'
+              },
+              {
+                label: '选项三',
+                value: '2'
+              }
+            ],
+            cascaderItem: [],
+            span: 16,
+            display: false,
+            props: {
+              label: 'label',
+              value: 'value'
+            },
+            hideLabel: false,
+            prop: 'shenhly',
+            isListDisplay: true,
+          },
+          {
+            type: 'cascader',
+            label: '行政区划',
+            span: 16,
+            isRegionTree: true,
+            display: false,
+            hide:true,
+            cascaderIndex: 1,
+            showAllLevels: true,
+            separator: '/',
+            dicUrl: '/aicos/api/aicos-form/baseForm/getFullRegionTree',
+            dicMethod: 'post',
+            dicFormatter: function(e) {
+              var t = e.data,
+                i = function e(t) {
+                  t.forEach((function(t) {
+                    t.children && 0 === t.children.length ? Reflect.deleteProperty(t, "children") : e(t.children)
+                  }))
+                };
+              return i(t),
+              t
+            },
+            props: {
+              label: 'name',
+              value: 'code',
+              res: 'data'
+            },
+            hideLabel: false,
+            prop: 'xingzqh',
+            isListDisplay: true,
+            search: true,
+            searchSpan:6,
+            dicQuery: {}
+          },
+          {
+            type: 'select',
+            label: '信息排序',
+            dicData: [
+              {
+                label: '选项一',
+                value: '0'
+              },
+              {
+                label: '选项二',
+                value: '1'
+              },
+              {
+                label: '选项三',
+                value: '2'
+              }
+            ],
+            cascaderItem: [],
+            span: 16,
+            display: false,
+            hide:true,
+            props: {
+              label: 'label',
+              value: 'value'
+            },
+            hideLabel: false,
+            prop: 'xinxpx',
+            isListDisplay: true,
+            search: true,
+            searchSpan:4,
+          },
+          {
+            type: 'date',
+            label: '新增时间段',
+            span: 16,
+            display: false,
+            hide:true,
+            format: 'yyyy-MM-dd',
+            valueFormat: 'yyyy-MM-dd',
+            hideLabel: false,
+            dataType: 'datetime',
+            prop: 'datetime_shijd',
+            isListDisplay: true,
+            search: true,
+            searchSpan:10,
+            searchRange: true,
+            searchLabelWidth:100
+          }
+        ],
+      },
+    };
+  },
+  computed: {
+    ...mapGetters(["permission"]),
+    permissionList () {
+      return {
+        toDoBtn: this.vaildData(
+          this.permission[`sys-commonForm-dataMag-toDo`],
+          false
+        ),
+        doneBtn: this.vaildData(
+          this.permission[`sys-commonForm-dataMag-done`],
+          false
+        ),
+        addMagBtn: this.vaildData(
+          this.permission[`sys-commonForm-dataMag-add`],
+          false
+        ),
+        kqtjBtn: this.vaildData(
+          this.permission[`sys-commonForm-dataMag-kqtj`],
+          false
+        ),
+      };
+    },
+    ids () {
+      let ids = [];
+      this.selectionList.forEach(ele => {
+        ids.push(ele.id);
+      });
+      return ids.join(",");
+    }
+  },
+  async mounted () {
+    await this.getActiveForm();
+  },
+  watch: {
+    $route: "getActiveForm",
+    "desktopWindow.data": {
+      handler (/*newVal*/) {
+        this.getActiveForm();
+      },
+      deep: true,
+    },
+    magParamsData: {
+      handler (/*newVal*/) {
+        //console.log(newVal)
+        this.getActiveForm();
+      },
+      deep: true,
+    },
+  },
+  methods: {
+    initData (/*type*/) { },
+    
+    refreshChange () {
+      this.onLoad(this.page, this.query);
+    },
+    beforeOpen (done, type) {
+      if (["add", "edit", "view"].includes(type)) {
+        if(type == 'edit' || type == 'view'){
+          this.listForm.xingzqh = this.listForm.xingzqh.split("/")
+        }
+        this.initData(type);
+      }
+      done();
+    },
+    beforeClose (done /*type*/) {
+      this.refreshChange();
+      done();
+    },
+    currentChange (currentPage) {
+      this.page.currentPage = currentPage;
+    },
+
+    sizeChange (pageSize) {
+      this.page.pageSize = pageSize;
+    },
+    searchReset () {
+      this.query = {};
+      this.onLoad(this.page);
+    },
+    searchChange (params, done) {
+      this.query = params;
+      this.page.currentPage = 1;
+      this.onLoad(this.page, params);
+      done();
+    },
+
+    selectionChange (list) {
+      this.selectionList = list;
+    },
+
+    selectionClear () {
+      this.selectionList = [];
+      this.$refs.listRef.toggleSelection();
+    },
+    onLoad (page /*, params = {}*/) {
+      this.loading = true;
+      const dataParam = {
+        reqPage: {
+          current: page.currentPage,
+          size: page.pageSize,
+        },
+        searchParam: {
+          ...this.query,
+        },
+      };
+      getListDataPro(dataParam).then((res) => {
+        const dataRes = res.data.data;
+        this.page.total = dataRes.rspPage.totalItems;
+        this.page.pageSize = dataRes.rspPage.size;
+        this.page.currentPage = dataRes.rspPage.current;
+        dataRes.fieldList.forEach( e =>{
+          e.xingzqh = e.xingzqh.replace(/,/g,"/")
+        })
+        this.listData = dataRes.fieldList;
+        this.loading = false;
+        this.selectionClear();
+      });
+    },
+    //查看
+    async comFormMagView (row , index) {
+      this.$refs.listRef.rowView(row, index);
+    },
+
+    //新增
+    rowSave (row, done, loading) {
+      row.xingzqhdm = row.xingzqhdm.join("/")
+      saveOrUpdateListDataPro(row).then(() => {0
+        done();
+        this.onLoad(this.page);
+        this.$message({
+          type: "success",
+          message: "操作成功!"
+        });
+      }, error => {
+        window.console.log(error);
+        loading();
+      });
+    },
+
+    //编辑
+    async comFormMagUpdate (row , index) {
+      this.$refs.listRef.rowEdit(row, index);
+    },
+
+    rowUpdate (row, index, done, loading) {
+      row.xingzqhdm = row.xingzqhdm.join("/")
+      saveOrUpdateListDataPro(row).then(() => {
+        done();
+        this.onLoad(this.page);
+        this.$message({
+          type: "success",
+          message: "操作成功!"
+        });
+      }, error => {
+        window.console.log(error);
+        loading();
+      });
+    },
+
+    async comFormMagDataInit (row) {
+      this.dataFormData = {};
+
+      const dataResFun = await viewListData({
+        id: row.id,
+        metObjName: this.metObjName,
+        systemCode: this.systemCode,
+      });
+
+      const dataRes = dataResFun.data.data;
+      this.formDataColumn = dataRes.formDataColumn;
+      return dataRes;
+    },
+
+    async getTemplateVersion (id) {
+      const TemplateParam = {
+        id: id ? id : this.templateId,
+      };
+      await getFromTemplate(TemplateParam).then(
+        (res) => {
+          const dataRes = res.data.data;
+          this.dataMagFormOption = this.cutProps(
+            JSON.parse(dataRes.formTemplateJson)
+          );
+          console.log(this.dataMagFormOption)
+          this.dataMagFormFlatJson = JSON.parse(dataRes.formTemplateFlatJson);
+
+          this.formTemplateOnetomanyFlatJson = JSON.parse(
+            dataRes.formTemplateOnetomanyFlatJson
+          );
+
+          this.cmfCustData = this.htmlDecodeByRegExp(dataRes.desc);
+        },
+        (error) => {
+          window.console.log(error);
+        }
+      );
+    },
+    cutProps (opt) {
+      //console.log(opt);
+      //将表单字典的label 处理成value 使其做完汉字存储
+      opt.column.map((item) => {
+        if (!validatenull(item.props)) {
+          //console.log(item);
+          item.props.value = item.props.label;
+        }
+
+        if (item.type == "dynamic") {
+          //console.log('顶级的子表单')
+          /*if( !isNull(item.children) ){
+
+            if( !isNull(item.children.column) ){
+              item.children.column.map((sobj)=>{
+                if (!validatenull(sobj.props)) {
+                  sobj.props.value = sobj.props.label;
+                }
+              })
+            }
+
+          }
+          */
+        }
+
+        if (item.type == "table") {
+          //console.log('顶级的table');
+          for (let k in item.data) {
+            for (let m in item.data[k]) {
+              if (!isNull(item.data[k][m].children)) {
+                item.data[k][m].children.map((sobj) => {
+                  if (!validatenull(sobj.props)) {
+                    sobj.props.value = sobj.props.label;
+                  }
+                });
+              }
+            }
+          }
+        }
+      });
+
+      if (!validatenull(opt.group)) {
+        opt.group.map((item) => {
+          if (!validatenull(item.column)) {
+            item.column.map((tobj) => {
+              if (!validatenull(tobj.props)) {
+                //console.log(tobj);
+                tobj.props.value = tobj.props.label;
+              }
+
+              if (tobj.type == "dynamic") {
+                //console.log('group里的子表单')
+              }
+
+              if (tobj.type == "table") {
+                //console.log('group里的table');
+                for (let k in tobj.data) {
+                  for (let m in tobj.data[k]) {
+                    if (!isNull(tobj.data[k][m].children)) {
+                      tobj.data[k][m].children.map((sobj) => {
+                        if (!validatenull(sobj.props)) {
+                          sobj.props.value = sobj.props.label;
+                        }
+                      });
+                    }
+                  }
+                }
+              }
+            });
+          }
+        });
+      }
+
+      return opt;
+    },
+    htmlDecodeByRegExp (str) {
+      let temp = "";
+      if (validatenull(str)) return "";
+      temp = str.replace(/&amp;/g, "&");
+      temp = temp.replace(/&lt;/g, "<");
+      temp = temp.replace(/&gt;/g, ">");
+      temp = temp.replace(/&nbsp;/g, " ");
+      // eslint-disable-next-line
+      temp = temp.replace(/&#39;/g, "'");
+      // eslint-disable-next-line
+      temp = temp.replace(/&quot;/g, '"');
+      return temp;
+    },
+    dataMagFormClose () {
+      this.cmfCustData = "";
+      this.dataMagFormClass = "";
+      this.dataInitTemplateId = "";
+      this.dataInitId = null;
+      this.dataMagFormTag = false;
+    },
+    async dataMagFormSave () {
+      this.$refs.dataMagFormRef.validate((valid /*msg*/) => {
+        if (valid) {
+          const dataMagFormDataJson =
+            this.$refs.dataMagFormRef.buildSubmitData();
+          const dataParam = {
+            id: this.dataInitId,
+            formTemplateVersionId: this.dataInitTemplateId
+              ? this.dataInitTemplateId
+              : this.templateId,
+            formDataJson: dataMagFormDataJson,
+          };
+
+          saveOrUpdateListData(dataParam).then(
+            (/*res*/) => {
+              this.refreshChange();
+              this.dataMagFormTag = false;
+              this.cmfCustData = "";
+              this.$message({
+                type: "success",
+                message: "操作成功!",
+              });
+            },
+            (error) => {
+              window.console.log(error);
+              this.$refs.dataMagFormRef.$refs.form.allDisabled = false;
+              this.cmfCustData = "";
+            }
+          );
+        } else {
+          window.console.log("error submit!!");
+          //this.cmfCustData = "";
+          return false;
+        }
+      });
+    },
+    //删除
+    comFormMagDel (row) {
+      this.$confirm("确定将选择数据删除?", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          const delParm = {
+            ids: [row.id],
+            metObjName: this.metObjName,
+            systemCode: this.systemCode,
+          };
+          return delListData(delParm);
+        })
+        .then(() => {
+          this.$message({
+            type: "success",
+            message: "操作成功!",
+          });
+          this.refreshChange();
+        });
+    },
+  }
+};
+</script>
+
+<style>
+.CMF_MAIN {
+  max-width: 1000px;
+  margin: 0 auto;
+  background-color: #fff;
+  border-left: 1px solid #ebeef5;
+  border-right: 1px solid #ebeef5;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.CMF_HEAD {
+  text-align: center;
+  background-color: #409eff;
+}
+
+.CMF_HEAD span {
+  font-size: 18px;
+  line-height: 50px;
+  color: #fff;
+}
+
+.CMF_BODY {
+  padding: 20px 10px 0;
+}
+
+.CMF_FOOT {}
+
+.CMF_CUST {}
+
+.dataMagFormClass .dataMagFormBody {
+  background-color: #f5f5f5;
+  padding: 20px 0 0;
+}
+
+.dataMagFormClass .dataMagFormFooter {
+  background-color: #fff;
+  margin-top: 20px;
+}
+
+.formVerifyClass {
+  padding: 30px 10px 10px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.dataMagFormBtns {
+  text-align: center;
+  padding: 30px 10px 60px;
+}
+
+@media print {
+  .el-popup-parent--hidden {
+    overflow: auto;
+  }
+
+  .dataMagFormClass {
+    position: static;
+  }
+
+  .dataMagFormClass .el-dialog {
+    height: auto;
+  }
+}
+</style>
+
+<style lang="scss" scoped>
